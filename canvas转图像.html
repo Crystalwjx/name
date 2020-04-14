@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="chrome=IE8">
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <title>Canvas Clip Demo</title>
+</head>
+
+<body>
+  <canvas id="text_canvas" height="300" width="300"></canvas>
+</body>
+<script>
+
+  var canvas = document.getElementById("text_canvas");
+  var context = canvas.getContext("2d");
+  context.fillStyle = "red";
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(50, 250);
+  context.bezierCurveTo(150, 50, 350, 450, 450, 250);
+  context.stroke();
+  context.fill();
+
+  canvas.toBlob(function (blob) {
+
+    var a = document.createElement("a");
+    var body = document.getElementsByTagName("body");
+    document.body.appendChild(a);
+    a.download = "img" + ".jpg";
+    a.href = window.URL.createObjectURL(blob);
+
+    a.click();
+    body.removeChild("a");
+
+  });
+
+</script>
+
+</html>

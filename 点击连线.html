@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="btn">submit</button>
+  <canvas id="myCanvas" width="800" height="500" style="position: absolute;"></canvas>
+</body>
+
+</html>
+<script>
+  var mycanvas;
+  var ctx;
+  var prevPoint;
+  var nextPoint;
+  var boxs = [[10, 10], [28, 449], [400, 450], [365, 80], [100, 200]];
+  var canClick = [true, true, true, true, true]
+  var oBtn = document.getElementById('btn')
+  window.onload = function () {
+    doStart()
+  }
+  function convertCanvasToImage(canvas) {
+    var image = new Image();
+    image.src = canvas.toDataURL("image/png");
+    return image;
+  }
+  function doStart() {
+    mycanvas = document.getElementById('myCanvas')
+    ctx = mycanvas.getContext('2d')
+    mycanvas.addEventListener("mousedown", doMouseDown, false)
+    drawimgs()
+  }
+  oBtn.onclick = function () {
+    mycanvas.toBlob(function (blob) {
+      var a = document.createElement("a");
+      var body = document.getElementsByTagName("body");
+      document.body.appendChild(a);
+      a.download = "img" + ".jpg";
+      a.href = window.URL.createObjectURL(blob);
+
+      a.click();
+      body.removeChild("a");
+
+    });
+  }
+  function drawimgs() {
+    var imgsrcArray = ['./1.png', './2.png', './3.png', './4.png', './5.png',]
+    for (let i = 1; i < 6; i++) {
+      let img = new Image();
+      // img.crossOrigin = 'Anonymous';
+      img.onload = function () {
+        ctx.drawImage(img, boxs[i - 1][0], boxs[i - 1][1], 50, 50);
+      }
+      img.src = './' + i + '.png';
+    }
+  }
+  function doMouseDown(event) {
+
+    var x = event.pageX;
+    var y = event.pageY;
+    var loc = getPointOnCanvas(mycanvas, x, y);
+    //alert("mouse down at point( x:" + loc.x + ", y:" + loc.y + ")");
+    // 判断在哪个区域内
+    keyvalue = 0;
+    boxs.forEach(function (value, m_index, array) {
+      if ((x > value[0]) && (x < value[0] + 50) && (y > value[1]) && (y < value[1] + 50)) {
+        keyvalue = m_index + 1;
+        if (canClick[m_index]) {
+          if (prevPoint) {
+            // 连线
+            drawLine(prevPoint, keyvalue)
+            prevPoint = keyvalue
+          } else {
+            prevPoint = keyvalue
+          }
+          canClick[m_index] = false
+        }
+      }
+    });
+  }
+  function drawLine(prev, next) {
+    var point1 = { left: boxs[prev - 1][0], top: boxs[prev - 1][1] };//第一个点
+    var point2 = { left: boxs[next - 1][0], top: boxs[next - 1][1] };//第二个点
+    ctx.beginPath();
+    ctx.setLineDash([20, 8]);// 绘制虚线
+    ctx.moveTo(point1.left, point1.top);//起始位置
+    ctx.lineTo(point2.left, point2.top);//停止位置
+    ctx.lineWidth = 5;
+    ctx.stroke();
+  }
+  function getPointOnCanvas(canvas, x, y) {
+    var bbox = canvas.getBoundingClientRect();
+    return {
+      x: x - bbox.left * (canvas.width / bbox.width),
+      y: y - bbox.top * (canvas.height / bbox.height)
+    };
+  } 
+</script>
