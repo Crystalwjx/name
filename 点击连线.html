@@ -8,7 +8,7 @@
 </head>
 
 <body>
-  <button id="btn">submit</button>
+  <!-- <button id="btn">submit</button> -->
   <canvas id="myCanvas" width="800" height="500" style="position: absolute;"></canvas>
 </body>
 
@@ -35,19 +35,19 @@
     mycanvas.addEventListener("mousedown", doMouseDown, false)
     drawimgs()
   }
-  oBtn.onclick = function () {
-    mycanvas.toBlob(function (blob) {
-      var a = document.createElement("a");
-      var body = document.getElementsByTagName("body");
-      document.body.appendChild(a);
-      a.download = "img" + ".jpg";
-      a.href = window.URL.createObjectURL(blob);
+  // oBtn.onclick = function () {
+  //   mycanvas.toBlob(function (blob) {
+  //     var a = document.createElement("a");
+  //     var body = document.getElementsByTagName("body");
+  //     document.body.appendChild(a);
+  //     a.download = "img" + ".jpg";
+  //     a.href = window.URL.createObjectURL(blob);
 
-      a.click();
-      body.removeChild("a");
+  //     a.click();
+  //     body.removeChild("a");
 
-    });
-  }
+  //   });
+  // }
   function drawimgs() {
     var imgsrcArray = ['./1.png', './2.png', './3.png', './4.png', './5.png',]
     for (let i = 1; i < 6; i++) {
@@ -73,7 +73,8 @@
         if (canClick[m_index]) {
           if (prevPoint) {
             // 连线
-            drawLine(prevPoint, keyvalue)
+            // drawLine(prevPoint, keyvalue)
+            drawLineArrow(prevPoint, keyvalue, 'red')
             prevPoint = keyvalue
           } else {
             prevPoint = keyvalue
@@ -91,6 +92,43 @@
     ctx.moveTo(point1.left, point1.top);//起始位置
     ctx.lineTo(point2.left, point2.top);//停止位置
     ctx.lineWidth = 5;
+    ctx.stroke();
+  }
+  function drawLineArrow(prev, next, color) {
+    var fromX = boxs[prev - 1][0] + 25
+    var fromY = boxs[prev - 1][1] + 25
+    var toX = boxs[next - 1][0] + 25
+    var toY = boxs[next - 1][1] + 25
+    var headlen = 20;//自定义箭头线的长度
+    var theta = 30;//自定义箭头线与直线的夹角，个人觉得45°刚刚好
+    var arrowX, arrowY;//箭头线终点坐标
+    // 计算各角度和对应的箭头终点坐标
+    var angle = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI;
+    var angle1 = (angle + theta) * Math.PI / 180;
+    var angle2 = (angle - theta) * Math.PI / 180;
+    var topX = headlen * Math.cos(angle1);
+    var topY = headlen * Math.sin(angle1);
+    var botX = headlen * Math.cos(angle2);
+    var botY = headlen * Math.sin(angle2);
+    ctx.beginPath();
+    ctx.setLineDash([20, 8])
+    //画直线
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(toX, toY);
+    ctx.lineWidth = 5;
+
+    arrowX = toX + topX;
+    arrowY = toY + topY;
+    //画上边箭头线
+    ctx.moveTo(arrowX, arrowY);
+    ctx.lineTo(toX, toY);
+
+    arrowX = toX + botX;
+    arrowY = toY + botY;
+    //画下边箭头线
+    ctx.lineTo(arrowX, arrowY);
+
+    ctx.strokeStyle = color;
     ctx.stroke();
   }
   function getPointOnCanvas(canvas, x, y) {
