@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no,viewport-fit=cover">
+  <title>扑克随机且不重叠分布</title>
+  <script>
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .demo {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    img {
+      width: 60px;
+      height: 60px;
+      position: absolute;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo"></div>
+  <script>
+    createBubble(10);   //初始化气泡
+    function createBubble(num) {
+      var iconWidth = 60;   //值越大，元素左右间隔越大
+      var iconHeight = 60;  //值越大，元素上下间隔越大
+      var targetHeight = document.querySelector(".demo").offsetHeight;
+      var targetWidth = document.querySelector(".demo").offsetWidth;
+      var _tmpArray = [];
+      var html = '';
+      //当放置的元素的宽高大于浏览器窗口的宽高时，直接返回
+      if (targetWidth < iconWidth || targetHeight < iconHeight) {
+        return false;
+      }
+
+      var xNum = parseInt(targetWidth / iconWidth, 10);    //用浏览器的宽度除以一个元素的宽度可算出浏览器窗口内一行可以放置元素的个数
+      var yNum = parseInt(targetHeight / iconHeight, 10);  //用浏览器的高度除以一个元素的高度可算出浏览器窗口内一列可以放置元素的个数
+      var allNum = xNum * yNum;   //浏览器窗口内总共可以放置元素的个数
+      //当需要放置的元素的个数超过浏览器窗口内总共可以放置的元素的个数时，则返回
+      if (num >= allNum) {
+        return false;
+      }
+
+      for (var i = 0; i < allNum; i++) {
+        _tmpArray.push(i);
+      }
+
+      var xStart = 0, yStart = 0;
+
+      while (num) {
+        var pointer = Math.floor(Math.random() * allNum);    //向下取整取出0到allnum之间的任意一个整数
+        //如果数组_tmpArray中不存在第pointer值，则继续
+        if (!_tmpArray[pointer]) {
+          continue;
+        }
+
+        delete _tmpArray[pointer];   //删除数组_tmpArray中第pointer个值
+        yStart = parseInt(pointer / xNum, 10) * iconWidth;
+        xStart = (pointer % xNum) * iconHeight;
+
+        html += "<img src='http://tp1.sinaimg.cn/1642634100/50/5613120647/0' style='top:" + yStart + "px;left:" + xStart + "px'/>";
+        num--;
+      }
+      document.querySelector(".demo").innerHTML = html;
+    }
+  </script>
+</body>
+
+</html>
